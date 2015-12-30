@@ -1,0 +1,1 @@
+echo on > /sys/devices/w1_bus_master1/power/control
