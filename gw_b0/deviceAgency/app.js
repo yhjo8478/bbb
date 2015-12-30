@@ -13,10 +13,10 @@ var STATUS_INTERVAL = 60000;  // status report interval; less than gateway one.
 
 function Device(id) {
   this.sensors = [{
-    name: 'B0_T',
+    name: 'B_F_T',
     type: 'temperature',
   }, {
-    name: 'B0_H',
+    name: 'B_F_H',
     type: 'humidity',
   }];
 
