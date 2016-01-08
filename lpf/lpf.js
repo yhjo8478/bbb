@@ -8,17 +8,17 @@ function Lpf(alpha) {
   }
 
   this.alpha = alpha;
-  this.history = undefined;
+  this.prev_output = undefined;
 }
 
 Lpf.prototype.filtering = function(input) {
-  if (!this.history) {
-    this.history = input;
+  if (!this.prev_output) {
+    this.prev_output = input;
     return input;
   }
 
-  var output = this.history + this.alpha * (input - this.history);
-  this.history = output;
+  var output = this.prev_output + this.alpha * (input - this.prev_output);
+  this.prev_output = output;
 
   return output;
 }
