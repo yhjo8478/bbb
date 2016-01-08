@@ -22,3 +22,5 @@ Lpf.prototype.filtering = function(input) {
 
   return output;
 }
+
+module.exports = Lpf;
