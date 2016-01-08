@@ -2,6 +2,8 @@ var async = require('async');
 var I2c = require('i2c');
 var locks = require('locks');
 
+var Lpf = require('./lpf');
+
 var DEVICE = '/dev/i2c-2';
 var ADDRESS = 0x40;
 var TH02_REG_STATUS = 0x00;
@@ -19,6 +21,8 @@ function Th02() {
   this.i2c = new I2c(ADDRESS, {device: DEVICE});
   this.i2cLock = false;
   this.mutex = locks.createMutex();
+  this.lpfTemperature = new Lpf(0.2);
+  this.lpfHumidity = new Lpf(0.2);
 };
 
 Th02.prototype.statusSync = function () {
@@ -27,6 +31,7 @@ Th02.prototype.statusSync = function () {
 
 Th02.prototype.getTemperature = function (cb) {
   var self = this;
+
   async.waterfall([
     function (done) {
       self.mutex.lock(function () {
@@ -67,8 +72,9 @@ Th02.prototype.getTemperature = function (cb) {
         var rawTemperature = (res[0] << 8) | (res[1]);
         rawTemperature >>= 2;
         rawTemperature = (parseFloat(rawTemperature) / 32.0) - 50.0;
+        rawTemperature = self.lpfTemperature.filtering(rawTemperature);
         console.log(rawTemperature);
-        return done(null, rawTemperature);
+        return done(null, rawTemperature.toFixed(1));
       });
     }],
     function (err, temperature) {
@@ -126,8 +132,9 @@ Th02.prototype.getHumidity = function (cb) {
         var rawHumidity = (res[0] << 8) | (res[1]);
         rawHumidity >>= 4;
         rawHumidity = (parseFloat(rawHumidity) / 16.0) - 24.0;
+        rawHumidity = self.lpfHumidity.filtering(rawHumidity);
         console.log(rawHumidity);
-        return done(null, rawHumidity);
+        return done(null, rawHumidity.toFixed(1));
       });
     }],
     function (err, humidity) {
