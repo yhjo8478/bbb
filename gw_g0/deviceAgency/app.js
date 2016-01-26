@@ -4,7 +4,8 @@ var jsonrpc = require('jsonrpc-tcp'),
     log4js = require('log4js'),
     _ = require('lodash');
 
-var Temperature = require('./ds18b20');
+var Temperature = require('./ds18b20'),
+    Boiler = require('./boiler');
 
 var logger = log4js.getLogger('T+EMBEDDED');
 
@@ -42,6 +43,12 @@ function Device(id) {
     type: 'temperature',
     w1_id: '28-041450a1e1ff',
     constructor: Temperature
+  }, {
+    name: 'B0',
+    type: 'powerSwitch',
+    gpio: 20,
+    constructor: Boiler,
+    actuating: boilerActuating
   }];
 
   this.id = id;
@@ -55,6 +62,18 @@ function Device(id) {
 function getSensorById(sensors, id) {
   var name = id.substring(id.indexOf('-')+1);
   return _.find(sensors, {'name': name} );
+}
+
+function boilerActuating(sensor, cmd, options, result) {
+  if (cmd === 'on') {
+    sensor.driver.turnOn(result);
+  }
+  else if (cmd == 'off') {
+    sensor.driver.turnOff(result);
+  }
+  else {
+    result(new Error('unknown cmd'));
+  }  
 }
 
 Device.prototype.sensing = function () {
@@ -162,7 +181,12 @@ Device.prototype.discovering = function (result) {
 
 Device.prototype._init = function () {
   _.forEach(this.sensors, function (sensor) {
-    sensor.driver = new sensor.constructor(sensor.w1_id);
+    if (sensor.type === 'temperature') {
+      sensor.driver = new sensor.constructor(sensor.w1_id);
+    }
+    else {
+      sensor.driver = new sensor.constructor(sensor.gpio);
+    }
   });
 };
 
