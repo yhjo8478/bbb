@@ -1,5 +1,9 @@
-var mqtt    = require('mqtt');
-var client  = mqtt.connect('mqtt://yhjo8478.iptime.org');
+var mqtt = require('mqtt'),
+    _ = require('lodash');
+
+var MQTT_URI = 'mqtt://127.0.0.1';
+
+var client  = mqtt.connect(MQTT_URI);
  
 client.on('connect', function () {
     client.subscribe('presence');
