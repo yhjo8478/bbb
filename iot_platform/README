@@ -1,0 +1,11 @@
+1. Node Js 설치 
+	v.4.3. 소스 다운로드 후 빌드 및 설치함
+2. MOSCA 설치
+3. forever 설치
+
+
+
+
+register/sensor      [{name:{sensor_name},type:{type}},...]
+data/{sensor}/       value
+
