@@ -1,0 +1,28 @@
+{
+  "name": "mqtt_broker",
+  "description": "moqq broker for iot platform",
+  "version": "0.0.1-1",
+  "author": {
+    "name": "younghyun",
+    "email": "yhjo8478@gmail.com"
+  },
+  "dependencies": {
+    "mqtt": "1.x.x"
+  },
+  "main": "app",
+  "keywords": [
+    "sensor",
+    "sensor.js",
+    "jsonrpc",
+    "driver"
+  ],
+  "engines": {
+    "node": ">=0.8.x"
+  },
+  "licenses": [
+    {
+      "type": "Copyright (c) 2016, All rights reserved."
+    }
+  ]
+}
+
