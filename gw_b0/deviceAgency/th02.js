@@ -4,7 +4,7 @@ var locks = require('locks');
 
 var Lpf = require('./lpf');
 
-var DEVICE = '/dev/i2c-2';
+var DEVICE = '/dev/i2c-1';
 var ADDRESS = 0x40;
 var TH02_REG_STATUS = 0x00;
 var TH02_REG_DATA_H = 0x01;
