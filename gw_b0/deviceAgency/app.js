@@ -4,7 +4,9 @@ var jsonrpc = require('jsonrpc-tcp'),
     log4js = require('log4js'),
     _ = require('lodash');
 
-var Th02 = require('./th02');
+var Th02 = require('./th02'),
+    Gpio = require('./gpio'),
+    Bh1750 = require('./bh1750');
 
 var logger = log4js.getLogger('T+EMBEDDED');
 
@@ -16,8 +18,15 @@ function Device(id) {
     name: 'B_F_T',
     type: 'temperature',
   }, {
+    name: 'B_L',
+    type: 'light',
+  }, {
     name: 'B_F_H',
     type: 'humidity',
+  }, {
+    name: 'B_TEST',
+    type: 'onoff',
+    notification: true,
   }];
 
   this.id = id;
@@ -143,15 +152,28 @@ Device.prototype.discovering = function (result) {
 };
 
 Device.prototype._init = function () {
-  var driver = new Th02();
+  var th02Driver = new Th02();
   _.forEach(this.sensors, function (sensor) {
-    sensor.driver = driver;
 
     if (sensor.type === 'temperature') {
+      sensor.driver = th02Driver;
       sensor.getValue = sensor.driver.getTemperature.bind(sensor.driver);
     }
     else if (sensor.type === 'humidity') {
+      sensor.driver = th02Driver;
       sensor.getValue = sensor.driver.getHumidity.bind(sensor.driver);
+    }
+    else if (sensor.type === 'light') {
+      var opt = {
+        address: 0x23,
+        device: '/dev/i2c-1'
+      };
+      sensor.driver = new Bh1750(opt);
+      sensor.getValue = sensor.driver.getLight.bind(sensor.driver);
+    }
+    else if (sensor.type === 'onoff') {
+      sensor.driver = new Gpio(20);
+      sensor.getValue = sensor.driver.getValue.bind(sensor.driver);
     }
   });
 };
